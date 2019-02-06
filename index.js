@@ -28,7 +28,6 @@ app.set('view engine', 'html');
 
 app.get('/', (req, res) => {
     const messages = db.get('messages')
-        .filter({ paid: true })
         .value();
 
     return res.render('index.ejs', { messages });
@@ -54,15 +53,6 @@ app.post('/messages', async (req, res) => {
             res.render('payment.ejs', { payreq: response.data.data.lightning_invoice.payreq });
         })
         .catch(error => console.log(error.response.data));
-});
-
-app.post('/opennode-callback', (req, res) => {
-    db.get('messages')
-        .find({ id: req.body.order_id })
-        .assign({ paid: true })
-        .write();
-
-    return res.send('OK');
 });
 
 app.listen(port, () => console.log(`App listening on port ${port}!`));
